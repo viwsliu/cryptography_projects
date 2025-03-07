@@ -1,14 +1,12 @@
-# Begin by importing some necessary modules
 from cryptography.hazmat.backends import default_backend
 from cryptography.hazmat.primitives import hashes
+
+message_1 = input("Input first message: ").encode('utf-8')
+message_2 = input("Input second message: ").encode('utf-8')
 
 #Helper function that returns the number of characters different in two strings
 def char_diff(str1, str2):
     return sum ( str1[i] != str2[i] for i in range(len(str1)) )
-
-# Messages to be hashed
-message_1 = input("Input first message: ").encode('utf-8')
-message_2 = input("Input second message: ").encode('utf-8')
 
 # Create new SHA-256 hash objects, one for each message
 chf_1 = hashes.Hash(hashes.SHA256(), backend=default_backend())
