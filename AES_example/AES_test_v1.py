@@ -1,11 +1,15 @@
+#Vincent Liu
+# I decided to use the "cryptography" python library, which exposes cryptographic recipes and primitives
+# https://cryptography.io/en/latest/
+
 from cryptography.hazmat.primitives.ciphers import Cipher, algorithms, modes
-#for documentation on each of the imports in order:
+#for documentation on each, in order:
 # https://cryptography.io/en/latest/hazmat/primitives/symmetric-encryption/#cryptography.hazmat.primitives.ciphers.Cipher
 # https://cryptography.io/en/latest/hazmat/primitives/symmetric-encryption/#algorithms
 # https://cryptography.io/en/latest/hazmat/primitives/symmetric-encryption/#module-cryptography.hazmat.primitives.ciphers.modes
 
 from cryptography.hazmat.primitives import hashes
-#for documentation on import:
+#for documentation on imported:
 # https://cryptography.io/en/latest/hazmat/primitives/cryptographic-hashes/#cryptography.hazmat.primitives.hashes.Hash
 
 from cryptography.hazmat.backends import default_backend
