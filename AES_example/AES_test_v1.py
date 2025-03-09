@@ -1,45 +1,59 @@
+#Vincent Liu
+# I decided to use the "cryptography" python library, which exposes cryptographic recipes and primitives
+# https://cryptography.io/en/latest/
+
 from cryptography.hazmat.primitives.ciphers import Cipher, algorithms, modes
-from cryptography.hazmat.primitives import padding
+#for documentation on each, in order:
+# https://cryptography.io/en/latest/hazmat/primitives/symmetric-encryption/#cryptography.hazmat.primitives.ciphers.Cipher
+# https://cryptography.io/en/latest/hazmat/primitives/symmetric-encryption/#algorithms
+# https://cryptography.io/en/latest/hazmat/primitives/symmetric-encryption/#module-cryptography.hazmat.primitives.ciphers.modes
+
 from cryptography.hazmat.primitives import hashes
+#for documentation on imported:
+# https://cryptography.io/en/latest/hazmat/primitives/cryptographic-hashes/#cryptography.hazmat.primitives.hashes.Hash
+
 from cryptography.hazmat.backends import default_backend
-import os
+# Provides access to the underlying implementation of algorithms and operations such as encryption, decryption, and hashing 
+
+import base64 # used to encode/decode binary data to/from ASCII text
+import os #used to generate random data for the Init Vector
+
 
 class AESEncryption(object):
     def __init__(self, key):
-        # Initialize the class with the provided key
         self.key = self._hash_key(key)
-        self.iv = os.urandom(16)  # Generate a random 16-byte IV
+        self.iv = os.urandom(16)  # random 16-byte IV
     
     def _hash_key(self, key):
-        # Hash the key to ensure it's 16 bytes long (128 bits)
         digest = hashes.Hash(hashes.SHA256(), backend=default_backend())
         digest.update(key.encode('utf-8'))
-        return digest.finalize()[:16]  # Use the first 16 bytes of the SHA256 hash
+        return digest.finalize()[:16]
+
+    def _pad(self, data):
+        block_size = 16
+        pad_len = block_size - len(data) % block_size
+        padding = bytes([pad_len]) * pad_len
+        return data + padding
+
+    def _unpad(self, data):
+        pad_len = data[-1]
+        return data[:-pad_len]
 
     def encrypt(self, plaintext):
-        # Create a Cipher object for AES encryption in CBC mode with the key and IV
+        padded_plaintext = self._pad(plaintext.encode('utf-8'))
         cipher = Cipher(algorithms.AES(self.key), modes.CBC(self.iv), backend=default_backend())
         encryptor = cipher.encryptor()
-        
-        # Pad the plaintext to be a multiple of the AES block size (16 bytes)
-        padder = padding.PKCS7(128).padder()
-        padded_plaintext = padder.update(plaintext.encode('utf-8')) + padder.finalize()
-
-        # Encrypt the padded plaintext
         ciphertext = encryptor.update(padded_plaintext) + encryptor.finalize()
-        return ciphertext
+        return base64.b64encode(self.iv + ciphertext) #prepend the IV to the ciphertext and encode to base64
 
     def decrypt(self, ciphertext):
-        # Create a Cipher object for AES decryption in CBC mode with the same key and IV
-        cipher = Cipher(algorithms.AES(self.key), modes.CBC(self.iv), backend=default_backend())
+        # Decode the base64 and separate the IV from the ciphertext
+        ciphertext = base64.b64decode(ciphertext)
+        iv = ciphertext[:16]  # Extract the IV (first 16 bytes)
+        actual_ciphertext = ciphertext[16:]
+
+        cipher = Cipher(algorithms.AES(self.key), modes.CBC(iv), backend=default_backend())
         decryptor = cipher.decryptor()
-
-        # Decrypt the ciphertext
-        decrypted_padded = decryptor.update(ciphertext) + decryptor.finalize()
-
-        # Unpad the decrypted plaintext
-        unpadder = padding.PKCS7(128).unpadder()
-        plaintext = unpadder.update(decrypted_padded) + unpadder.finalize()
-
-        # Return the decrypted plaintext as a UTF-8 string
+        decrypted_padded = decryptor.update(actual_ciphertext) + decryptor.finalize()
+        plaintext = self._unpad(decrypted_padded)
         return plaintext.decode('utf-8')
