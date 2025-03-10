@@ -4,7 +4,7 @@ from cryptography.hazmat.backends import default_backend
 from copy import copy
 import base64
 import os
-import s_box
+import s_box #python helper functions to generate S-boxes and Inverse S-boxes
 
 class AESEncryption(object):
 
