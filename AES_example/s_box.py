@@ -16,7 +16,6 @@ def generate_sbox():
             inv_sbox[sbox[i]] = i
         else: #if no inverse exists use AES-defined constant for 0
             sbox[i] = 0x63
-
     return sbox, inv_sbox
 
 def gf_multiply(x, y):
@@ -53,3 +52,6 @@ def affine_transform(x):
     # final XOR with the constant 0x63 (as defined by AES standard)
     x = (x & 0xFF) ^ 0x63
     return x
+
+# s, invs = generate_sbox()
+# print(s)
