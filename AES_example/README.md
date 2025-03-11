@@ -45,7 +45,7 @@ Run the Encryption/Decryption Runner:
 python ./AES_runner.py
 ```
 
-This will print out the encrypted message, as well as its decrypted counterpart
+> This will print out the encrypted message, as well as its decrypted counterpart
 'ciphertext.txt' will only contain ciphertext (From v1 and v2)
 There will be two decrypted outputs; 'decrypted_v1.txt' and 'decrypted_v2.txt' from AES_test_v1.py and AES_test_v2.py respectively
 
@@ -60,7 +60,7 @@ To cleanup after:
 python ./cleanup.py
 ```
 
-This script removes the following files: "key.txt", "decrypted_v1.txt", "decrypted_v2.txt", "ciphertext.txt"
+> This script removes the following files: "key.txt", "decrypted_v1.txt", "decrypted_v2.txt", "ciphertext.txt"
 
 To stop the python environment (venv):
 ```bash
