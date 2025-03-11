@@ -45,11 +45,11 @@ class AESEncryption(object):
     def rotate(self, word, n): # rotates a 4-byte word by 'n' positions
         return word[n:] + word[:n]
 
-    def shiftRows(self, state):
+    def shiftRows(self, state): #Shift rows
         for i in range(4):
             state[i * 4:(i + 1) * 4] = self.rotate(state[i * 4:(i + 1) * 4], i)
 
-    def shiftRowsInv(self, state):
+    def shiftRowsInv(self, state): #Inverse shift rows
         for i in range(4):
             state[i * 4:(i + 1) * 4] = self.rotate(state[i * 4:(i + 1) * 4], -i)
 
