@@ -59,10 +59,10 @@ AES achieves its security through a combination of mathematical complexity and p
 
 1. Substitution-Permutation Network (SPN)
     - AES utilizes a SPN structure, which alternates between substitution (using S-boxes) and permutation to create complex and non-linear transformations of the plaintext input.
-2. Avalanche Effect
-    - A cryptographic property where minor changes in the input result in substantial changes in the output (known as the diffusion property). AES is designed so that each bit of the ciphertext is influenced by every bit of the plaintext and the key. This design makes it extremely difficult for attackers to detect any patterns between the plaintext and ciphertext – protecting against known plaintext and frequency analysis attacks.
+2. Strong Diffusion
+    - A cryptographic property where minor changes in the input result in substantial changes in the output. AES is designed so that each bit of the ciphertext is influenced by every bit of the plaintext and the key making it extremely difficult for attackers to detect any patterns between the plaintext and ciphertext. This helps protect against known plaintext and frequency analysis attacks.
 3. Key Space
-    - AES uses key sizes of 128, 192, and 256 bits. The vast key space provided by these sizes makes AES resistant to brute force attacks. For example, for AES-128, the key space is computationally infeasible to break with current technology
+    - AES uses key sizes of 128, 192, and 256 bits. The vast key space provided by these sizes makes AES resistant to brute force attacks. For example, for AES-128, the key space is computationally infeasible to break (brute force in particular).
 4. Structural Complexity
     - AES's design includes at least nine rounds of substitution, permutation, and mixing operations to confuse and diffuse the relationship between plaintext and ciphertext. These operations resist cryptanalytic techniques like linear and differential cryptanalysis, with strong diffusion and the use of S-boxes making AES resistant to such attacks.
 
