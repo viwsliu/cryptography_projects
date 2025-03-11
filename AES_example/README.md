@@ -2,17 +2,17 @@
 This folder contains a simplified implementation of AES128
 
 ## Files:
-# AES_test_v1.py 
+### AES_test_v1.py 
 AES128 implementation utilizing (and heavily relies upon) the "cryptography" python library
-# AES_test_v2.py
+### AES_test_v2.py
 AES128 implementation utilizing the "cryptography" python library
-# AES_runner.py
+### AES_runner.py
 Runs both AES_test version files and prints the their respective ciphertext outputs, as well as their decrypted outputs 
-# AES_keygen.py
+### AES_keygen.py
 Generates a symmetric key for AES128
-# s_box.py
+### s_box.py
 S-box and Inverse S-box Generation
-# requirements.txt
+### requirements.txt
 
 ## How to run:
 Create a py environment:
