@@ -14,6 +14,8 @@ Generates a symmetric key for AES128
 S-box and Inverse S-box Generation
 ### cleanup.py
 Removes certain .txt files
+### about_AES.md
+Contains additional info (very short research report) on AES
 ### requirements.txt
 
 ## How to run:
