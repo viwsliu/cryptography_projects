@@ -16,7 +16,10 @@ with open(key_file, 'r') as file:
 
 # Read the plaintext input
 with open(input_file, 'r') as file:
-    plaintext = file.read()
+    try:
+        plaintext = file.read()
+    except:
+        print("plaintext.txt DOES NOT EXIST")
 
 AES_v1 = v1(key)
 AES_v2 = v2(key)

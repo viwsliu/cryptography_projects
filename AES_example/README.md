@@ -29,7 +29,7 @@ pip install -r requirements.txt
 
 Create 'plaintext.txt' and write a message you would like to encrypt
 
-Generate a symmetric key:
+Generate a key:
 ```bash
 python ./AES_keygen.py
 ```
