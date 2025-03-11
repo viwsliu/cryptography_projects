@@ -1,9 +1,12 @@
-from cryptography.hazmat.primitives import hashes
+from cryptography.hazmat.primitives import hashes 
+# https://cryptography.io/en/latest/hazmat/primitives/cryptographic-hashes/#cryptography.hazmat.primitives.hashes.Hash
 from cryptography.hazmat.backends import default_backend
+
 from copy import copy
-import base64
-import os
+import base64 # used to encode/decode binary data to/from ASCII text
 import s_box #python helper functions to generate S-boxes and Inverse S-boxes
+import os
+
 
 class AESEncryption(object):
 
@@ -71,7 +74,7 @@ class AESEncryption(object):
         column[3] = self.galoisMult(temp[3], 2) ^ self.galoisMult(temp[2], 1) ^ self.galoisMult(temp[1], 1) ^ self.galoisMult(temp[0], 3)
 
     def mixColumnInv(self, column): # Mixes the input column of the state matrix using inverse GF multiplication
-        # inverse matrix is used to restore the original data by multiplying by constants (14, 11, 13, 9) combining the results using XOR.
+        # inverse matrix is used to restore the original data by multiplying by constants (14, 11, 13, 9) and combining results using XOR.
         temp = copy(column)
         column[0] = self.galoisMult(temp[0], 14) ^ self.galoisMult(temp[3], 9) ^ self.galoisMult(temp[2], 13) ^ self.galoisMult(temp[1], 11)
         column[1] = self.galoisMult(temp[1], 14) ^ self.galoisMult(temp[0], 9) ^ self.galoisMult(temp[3], 13) ^ self.galoisMult(temp[2], 11)
@@ -86,27 +89,22 @@ class AESEncryption(object):
     def encrypt(self, plaintext):
         plaintext = self._pad(plaintext.encode('utf-8'))  # pad plaintext to make it a multiple of 16 bytes
         encrypted_data = b""
-
-        # Process in 16-byte blocks
         for i in range(0, len(plaintext), 16):
-            block = plaintext[i:i + 16]  # Extract 16-byte block
-            state = list(block)  # Convert each 16-byte block into list of bytes
-            roundKey = self.key + self.iv  # Use key and IV for initial round key
+            block = plaintext[i:i + 16]  # extract 16-byte block
+            state = list(block)  # convert each 16-byte block into list of bytes
+            roundKey = self.key + self.iv  # use key and IV for initial round key
             self.addRoundKey(state, roundKey)
-            
-            for round in range(self.turns - 1):  # 9 rounds of AES encryption
+            for round in range(self.turns - 1):  # 9 rounds of AES encryption (since we already did initial round)
                 self.subBytes(state)
                 self.shiftRows(state)
                 self.mixColumn(state)
                 self.addRoundKey(state, self.key)
-            
+            #no mixColumn in final round
             self.subBytes(state)
             self.shiftRows(state)
-            roundKey = self.key  # Final round (still use the key)
+            roundKey = self.key
             self.addRoundKey(state, roundKey)
-            
-            encrypted_data += bytes(state)  # Add the encrypted block to the result
-        
+            encrypted_data += bytes(state)
         return base64.b64encode(self.iv + encrypted_data).decode('utf-8')  # Return encrypted data with IV
 
     def decrypt(self, encoded_ciphertext):
@@ -114,30 +112,24 @@ class AESEncryption(object):
         iv = decoded_data[:16]  # First 16 bytes are the IV
         ciphertext = decoded_data[16:]  # The rest is the ciphertext
         decrypted_data = b""
-
         # Process in 16-byte blocks
         for i in range(0, len(ciphertext), 16):
-            block = ciphertext[i:i + 16]  # Extract 16-byte block
-            state = list(block)  # Convert each 16-byte block into list of bytes
+            block = ciphertext[i:i + 16]  # extract 16-byte block
+            state = list(block)  # convert each 16-byte block into list of bytes
             # Add initial round key (key XOR IV) to the state (reverse of encryption step)
             roundKey = self.key + iv
             self.addRoundKey(state, roundKey)
-            
             for round in range(self.turns - 1):  # 9 rounds of AES decryption
                 self.shiftRowsInv(state)
                 self.subBytesInv(state)
                 self.addRoundKey(state, self.key)
                 self.mixColumnInv(state)
-            
-            # Final round (no MixColumns)
+            #no mixColumn in final round
             self.shiftRowsInv(state)
             self.subBytesInv(state)
             self.addRoundKey(state, self.key)
-            
-            decrypted_data += bytes(state)  # Add the decrypted block to the result
-
-        # Remove padding from decrypted data
-        return self.unpad(decrypted_data).decode('utf-8')
+            decrypted_data += bytes(state)  #append decrypted block to output
+        return self.unpad(decrypted_data).decode('utf-8') #remove padding and return decrypted text
 
 #testing
 if __name__ == "__main__":

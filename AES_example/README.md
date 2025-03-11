@@ -1,4 +1,4 @@
-# AES Example
+# AES Simplified Implementation
 This folder contains a simplified implementation of AES128
 
 ## Files:
