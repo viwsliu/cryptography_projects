@@ -53,5 +53,6 @@ def affine_transform(x):
     x = (x & 0xFF) ^ 0x63
     return x
 
-# s, invs = generate_sbox()
-# print(s)
+if __name__ == '__main__':
+    s, invs = generate_sbox()
+    print(s)

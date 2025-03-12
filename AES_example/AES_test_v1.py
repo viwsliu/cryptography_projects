@@ -53,3 +53,20 @@ class AESEncryption(object):
         decrypted_padded = decryptor.update(actual_ciphertext) + decryptor.finalize() # Decrypt and remove padding
         plaintext = self._unpad(decrypted_padded)
         return plaintext.decode('utf-8')
+
+if __name__ == "__main__":
+    input_plaintext_file = 'plaintext.txt'
+    input_key_file = 'key.txt' 
+    
+    with open(input_plaintext_file, 'r') as file:
+        input_data = file.read()
+
+    with open(input_key_file, 'r') as file:
+        key = file.read()
+
+    test = AESEncryption(key)
+    encrypted = test.encrypt(input_data)
+    print(f'Encrypted v2: {encrypted} \n')
+
+    decrypted = test.decrypt(encrypted)
+    print(f'Decrypted v2: {decrypted}')

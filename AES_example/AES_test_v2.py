@@ -7,15 +7,19 @@ import base64 # used to encode/decode binary data to/from ASCII text
 import s_box #python helper functions to generate S-boxes and Inverse S-boxes
 import os
 
+import key_expansion as key_expan #python helper functions for key_expansion step
 
 class AESEncryption(object):
-
     def __init__(self, key):
         self.key = self._hash_key(key)
         self.iv = os.urandom(16)  # randomly generated 16-byte IV
         self.turns = 10  # 128-bit key means 10 rounds of encryption
         self.s_box, self.inv_s_box = s_box.generate_sbox()
         self.state = None
+
+        temp_key = [key[i:i+2] for i in range(0, len(key), 2)]
+        self.key_expansion = key_expan.keyExpansion(temp_key)
+        # print(self.key_expansion)
 
     def _hash_key(self, key): #takes a 128 bit key and produces a hashed output using SHA-256
         digest = hashes.Hash(hashes.SHA256(), backend=default_backend())
@@ -81,28 +85,38 @@ class AESEncryption(object):
         column[2] = self.galoisMult(temp[2], 14) ^ self.galoisMult(temp[1], 9) ^ self.galoisMult(temp[0], 13) ^ self.galoisMult(temp[3], 11)
         column[3] = self.galoisMult(temp[3], 14) ^ self.galoisMult(temp[2], 9) ^ self.galoisMult(temp[1], 13) ^ self.galoisMult(temp[0], 11)
 
-    def addRoundKey(self, state, roundKey):
-        for i in range(len(state)):
-            state[i] ^= roundKey[i]
+    def addRoundKey(self, state_1d, round_key):
+        state = [state_1d[i:i + 4] for i in range(0, len(state_1d), 4)]
+        new_state = []
+        # print("state", state)
+        # print("round_key", round_key)
+        for i in range(4):
+            row = []
+            for j in range(4):
+                round_key_byte = int(round_key[i][j], 16)
+                xor_result = state[i][j] ^ round_key_byte
+                row.append(xor_result)
+            new_state.append(row)
+        return new_state
 
-    #note that we use the same key in encrypt and decrypt (all rounds) for simplicity (also bc I couldnt figure out how to make key expansion step)
+    #(still trying to figure out key expansion step)
     def encrypt(self, plaintext):
         plaintext = self._pad(plaintext.encode('utf-8'))  # pad plaintext to make it a multiple of 16 bytes
         encrypted_data = b""
         for i in range(0, len(plaintext), 16):
             block = plaintext[i:i + 16]  # extract 16-byte block
             state = list(block)  # convert each 16-byte block into list of bytes
-            roundKey = self.key + self.iv  # use key and IV for initial round key
+            roundKey = self.key_expansion
             self.addRoundKey(state, roundKey)
             for round in range(self.turns - 1):  # 9 rounds of AES encryption (since we already did initial round)
                 self.subBytes(state)
                 self.shiftRows(state)
                 self.mixColumn(state)
-                self.addRoundKey(state, self.key)
+                self.addRoundKey(state, self.key_expansion)
             #no mixColumn in final round
             self.subBytes(state)
             self.shiftRows(state)
-            roundKey = self.key
+            roundKey = self.key_expansion
             self.addRoundKey(state, roundKey)
             encrypted_data += bytes(state)
         return base64.b64encode(self.iv + encrypted_data).decode('utf-8')  # Return encrypted data with IV
@@ -116,26 +130,29 @@ class AESEncryption(object):
         for i in range(0, len(ciphertext), 16):
             block = ciphertext[i:i + 16]  # extract 16-byte block
             state = list(block)  # convert each 16-byte block into list of bytes
-            # Add initial round key (key XOR IV) to the state (reverse of encryption step)
-            roundKey = self.key + iv
+            roundKey = self.key_expansion
             self.addRoundKey(state, roundKey)
             for round in range(self.turns - 1):  # 9 rounds of AES decryption
                 self.shiftRowsInv(state)
                 self.subBytesInv(state)
-                self.addRoundKey(state, self.key)
+                self.addRoundKey(state, self.key_expansion)
                 self.mixColumnInv(state)
             #no mixColumn in final round
             self.shiftRowsInv(state)
             self.subBytesInv(state)
-            self.addRoundKey(state, self.key)
+            self.addRoundKey(state, self.key_expansion)
             decrypted_data += bytes(state)  #append decrypted block to output
         return self.unpad(decrypted_data).decode('utf-8') #remove padding and return decrypted text
 
 #testing
 if __name__ == "__main__":
-    key = base64.b64encode(os.urandom(16)).decode('utf-8')
+
+    
+    input_key_file = 'key.txt' 
+    with open(input_key_file, 'r') as file:
+        key = file.read()
+
     test = AESEncryption(key)
-    # print(key)
 
     input_file = 'plaintext.txt'
     with open(input_file, 'r') as file:
