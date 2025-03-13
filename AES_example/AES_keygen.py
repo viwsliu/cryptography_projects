@@ -1,7 +1,6 @@
 import os
 
-def generate_aes_key():
-    """Generates a random 128-bit AES key (16 bytes)"""
+def generate_aes_key(): #Generates a random 128-bit AES key (16 bytes)
     return os.urandom(16)
 
 if __name__ == '__main__':

@@ -15,12 +15,30 @@ class AESEncryption(object):
         self.iv = os.urandom(16)  # randomly generated 16-byte IV
         self.turns = 10  # 128-bit key means 10 rounds of encryption
         self.s_box, self.inv_s_box = s_box.generate_sbox()
+        self.write_to_sbox_file()
+
         self.state = None
 
         temp_key = [key[i:i+2] for i in range(0, len(key), 2)]
         self.key_expansion = key_expan.keyExpansion(temp_key)
         # print(self.key_expansion)
 
+    def write_to_sbox_file(self): #write the used S-Box and Inverse S-Box used
+        s_box_file = 's_boxes_used.txt'
+        with open(s_box_file, 'w') as file:
+            file.write('Encrypted v2 s_box: \n')
+            for i, item in enumerate(self.s_box, start=1):
+                file.write(f'{hex(item)} ')
+                if i % 16 == 0:
+                    file.write('\n')
+            file.write('\n')
+            file.write('v2 inverse s_box: \n')
+            for i, item in enumerate(self.inv_s_box, start=1):
+                file.write(f'{hex(item)} ')
+                if i % 16 == 0:
+                    file.write('\n')
+        return
+    
     def _hash_key(self, key): #takes a 128 bit key and produces a hashed output using SHA-256
         digest = hashes.Hash(hashes.SHA256(), backend=default_backend())
         digest.update(key.encode('utf-8')) #converts input key to bytes using UTF-8 endcoding, since hash functions work on byte data
@@ -30,9 +48,9 @@ class AESEncryption(object):
         block_size = 16 # standard block size of AES
         pad_len = block_size - len(data) % block_size # calculate how many bytes are needed to reach the next multiple of 16
         padding = bytes([pad_len]) * pad_len
-        return data + padding
+        return data + padding #returns plaintext + padding
 
-    def unpad(self, data): # removes padding from ciphertext when decrypting
+    def unpad(self, data): #takes decrypted text with padding and removes padding found in last 16 bytes
         padding_length = data[-1]
         if padding_length < 1 or padding_length > 16:
             raise ValueError("Error in unpad")
@@ -57,7 +75,7 @@ class AESEncryption(object):
         for i in range(4):
             state[i * 4:(i + 1) * 4] = self.rotate(state[i * 4:(i + 1) * 4], -i)
 
-    def galoisMult(self, a, b): # Galois field multiplication 
+    def galoisMult(self, a, b): # galois field multiplication 
         p = 0
         for i in range(8):
             if b & 1:
@@ -106,8 +124,7 @@ class AESEncryption(object):
         for i in range(0, len(plaintext), 16):
             block = plaintext[i:i + 16]  # extract 16-byte block
             state = list(block)  # convert each 16-byte block into list of bytes
-            roundKey = self.key_expansion
-            self.addRoundKey(state, roundKey)
+            self.addRoundKey(state, self.key_expansion)
             for round in range(self.turns - 1):  # 9 rounds of AES encryption (since we already did initial round)
                 self.subBytes(state)
                 self.shiftRows(state)
@@ -116,8 +133,7 @@ class AESEncryption(object):
             #no mixColumn in final round
             self.subBytes(state)
             self.shiftRows(state)
-            roundKey = self.key_expansion
-            self.addRoundKey(state, roundKey)
+            self.addRoundKey(state, self.key_expansion)
             encrypted_data += bytes(state)
         return base64.b64encode(self.iv + encrypted_data).decode('utf-8')  # Return encrypted data with IV
 
@@ -130,8 +146,7 @@ class AESEncryption(object):
         for i in range(0, len(ciphertext), 16):
             block = ciphertext[i:i + 16]  # extract 16-byte block
             state = list(block)  # convert each 16-byte block into list of bytes
-            roundKey = self.key_expansion
-            self.addRoundKey(state, roundKey)
+            self.addRoundKey(state, self.key_expansion)
             for round in range(self.turns - 1):  # 9 rounds of AES decryption
                 self.shiftRowsInv(state)
                 self.subBytesInv(state)
@@ -146,7 +161,6 @@ class AESEncryption(object):
 
 #testing
 if __name__ == "__main__":
-
     
     input_key_file = 'key.txt' 
     with open(input_key_file, 'r') as file:
@@ -159,7 +173,7 @@ if __name__ == "__main__":
         input_data = file.read()
 
     encrypted = test.encrypt(input_data)
-    print(f'Encrypted v2: {encrypted}')
+    print(f'\n Encrypted v2: {encrypted} \n')
 
     decrypted = test.decrypt(encrypted)
-    print(f'Decrypted v2: {decrypted}')
+    print(f'Decrypted v2: {decrypted} \n')

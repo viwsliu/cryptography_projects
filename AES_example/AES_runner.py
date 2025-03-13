@@ -7,6 +7,7 @@ cipher_file = 'ciphertext.txt'
 decrypted_file_v1 = 'decrypted_v1.txt'
 decrypted_file_v2 = 'decrypted_v2.txt'
 
+
 # read key from key.txt
 with open(key_file, 'r') as file:
     try:

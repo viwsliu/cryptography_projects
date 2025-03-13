@@ -1,6 +1,6 @@
 import os
 
-delete_list = ["key.txt", "decrypted_v1.txt", "decrypted_v2.txt", "ciphertext.txt"]
+delete_list = ["key.txt", "decrypted_v1.txt", "decrypted_v2.txt", "ciphertext.txt", "s_box_file.txt", "s_boxes_used.txt"]
 
 current_directory = os.getcwd()
 
