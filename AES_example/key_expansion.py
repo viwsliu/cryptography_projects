@@ -9,6 +9,7 @@ Rcon = [
     0x1b000000, 0x36000000
 ]
 
+#This file performs the key expansion set of AES. Contains additional helper functions required for the step as well
 def keyExpansion(key):
     w = [[] for _ in range(44)]
     for i in range(4):
