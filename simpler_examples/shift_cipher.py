@@ -1,6 +1,5 @@
 import string
 
-# Implements a shift cipher with shift k on string st
 def shift_cipher(k, st):
     a_to_n = dict(zip(string.ascii_lowercase, range(26)))
     n_to_a = {v: k for k, v in a_to_n.items()}
@@ -10,7 +9,6 @@ def shift_cipher(k, st):
     encrypted = ''.join([n_to_a.get(n, n) if isinstance(n, int) else n for n in num_shift])
     return encrypted
 
-# Decrypts a message by applying the inverse shift (k) to string st
 def shift_decipher(k, st):
     a_to_n = dict(zip(string.ascii_lowercase, range(26)))
     n_to_a = {v: k for k, v in a_to_n.items()}

@@ -1,8 +1,6 @@
 import random
 import string
 
-# Creates a random permutation when ran, stores as a dictionary 
-# with keys the alphabet and values the permuted alphabet
 def random_permutation():
     a_to_n = list(string.ascii_lowercase)
     a_to_b = {}
@@ -16,8 +14,6 @@ def random_permutation():
             j += 1
     return a_to_b
 
-# Input a dictionary d giving a permutation of the lower case alphabet
-# Outputs a substitution cipher applied to the string st
 def substitution_cipher(d, st):
     st = st.lower()
     l = list(st)
@@ -25,7 +21,6 @@ def substitution_cipher(d, st):
     st = ''.join(code_w)
     return st
 
-# Prints the frequency of characters appearing in cipher
 def check_frequency(st):
     a_to_n = list(string.ascii_lowercase)
     l = list(st)
