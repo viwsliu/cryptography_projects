@@ -1,5 +1,4 @@
-# cryptography_projects
-Basic Cryptography Projects
+# Basic Cryptography Project
 
 Create a py environment:
 ```bash
