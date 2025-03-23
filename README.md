@@ -1,5 +1,8 @@
 # Basic Cryptography Project
 
+This repo contains various cryptosystems that I am learning to implement. There may be errors in these implementations.
+
+## Setup:
 Create a py environment:
 ```bash
 python -m venv venv
