@@ -28,7 +28,7 @@ pandas==2.2.3
 pycparser==2.22
 pycryptodome==3.21.0
 PyGObject==3.42.1
-PyJWT==2.3.0
+PyJWT==2.4.0
 pynvim==0.4.2
 pyparsing==2.4.7
 python-apt==2.4.0+ubuntu2
