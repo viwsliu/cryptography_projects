@@ -9,7 +9,6 @@ python -m venv venv
 source venv/bin/activate  # On Windows: venv\Scripts\activate
 ```
 
-pip install 
 Install the dependencies - cryptography: 
 ```bash
 pip install -r requirements.txt
